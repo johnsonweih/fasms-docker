@@ -1,6 +1,6 @@
 // src/controllers/applicantsController.js
 
-const Applicant = require('../models/applicant');
+const { Applicant } = require('../models/applicant');
 
 // Get all applicants
 async function getAllApplicants(req, res) {

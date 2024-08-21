@@ -11,10 +11,7 @@ services:
       DB_USER: root
       DB_PASSWORD: P@ssw0rd_2024
       DB_NAME: fasms_dev
-      AWS_COGNITO_REGION: ap-southeast-1
-      AWS_COGNITO_USER_POOL_ID: your_user_pool_id
-      AWS_COGNITO_CLIENT_ID: your_client_id
-      AWS_COGNITO_SECRET_HASH: your_client_secret
+      JWT_SECRET: your_jwt_secret
     volumes:
       - .:/usr/src/app  # This maps your local code to the container
     depends_on:

@@ -1,11 +1,19 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const authRouter = require('./routes/auth');
 
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// Route for "Hello World"
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+    res.send('Hello World');
 });
 
-app.listen(port, () => {
-  console.log(`App running on http://localhost:${port}`);
+// Use routes
+app.use('/auth', authRouter);
+
+// Start the server
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
 });

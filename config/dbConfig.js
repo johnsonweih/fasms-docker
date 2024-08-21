@@ -1,8 +1,6 @@
-// config/dbConfig.js
-
 const mysql = require('mysql2');
 
-// Create a connection pool to handle multiple simultaneous connections
+// Create a connection pool
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -13,7 +11,12 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+
 // Export a promise-based version of the connection pool
 const promisePool = pool.promise();
+
+promisePool.query('SELECT 1')
+    .then(() => console.log('Database connection successful'))
+    .catch(err => console.error('Database connection error:', err));
 
 module.exports = promisePool;

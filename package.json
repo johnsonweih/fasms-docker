@@ -4,9 +4,9 @@
   "description": "financial assistance scheme management system",
   "main": "index.js",
   "scripts": {
-  "start": "node src/index.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
-},
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/johnsonweih/fasms-docker.git"
@@ -18,6 +18,10 @@
   },
   "homepage": "https://github.com/johnsonweih/fasms-docker#readme",
   "dependencies": {
-    "express": "^4.19.2"
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.0",
+    "sequelize": "^6.37.3"
   }
 }

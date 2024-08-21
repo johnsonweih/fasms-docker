@@ -1,23 +1,20 @@
 const jwt = require('jsonwebtoken');
-const { promisify } = require('util');
-const pool = require('../models/pool'); // Your database pool or connection module
+const promisePool = require('../../config/dbConfig');
 
-const verifyToken = promisify(jwt.verify);
-
-// Middleware to authenticate and authorize users
+// Middleware to authenticate users
 const authMiddleware = async (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
-    
+
     if (!token) {
         return res.status(401).json({ message: 'No token provided' });
     }
 
     try {
-        const decoded = await verifyToken(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
-        
-        // Optionally, you can load user roles here for more detailed checks
-        const [rows] = await pool.query(
+
+        // Load user roles
+        const [rows] = await promisePool.query(
             'SELECT roles.name FROM user_roles JOIN roles ON user_roles.role_id = roles.id WHERE user_roles.user_id = ?',
             [req.user.id]
         );
@@ -29,7 +26,7 @@ const authMiddleware = async (req, res, next) => {
     }
 };
 
-// Middleware to check specific roles
+// Middleware to authorize specific roles
 const authorizeRole = (requiredRole) => {
     return (req, res, next) => {
         if (req.user.roles.includes(requiredRole)) {

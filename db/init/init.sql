@@ -1,4 +1,4 @@
-CREATE TABLE Administrators (
+CREATE TABLE IF NOT EXISTS Administrators (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE Administrators (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Applicants (
+CREATE TABLE IF NOT EXISTS Applicants (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     employment_status ENUM('employed', 'unemployed') NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE Applicants (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Household (
+CREATE TABLE IF NOT EXISTS Household (
     id INT AUTO_INCREMENT PRIMARY KEY,
     applicant_id INT,
     name VARCHAR(100) NOT NULL,
@@ -27,14 +27,14 @@ CREATE TABLE Household (
     FOREIGN KEY (applicant_id) REFERENCES Applicants(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Schemes (
+CREATE TABLE IF NOT EXISTS Schemes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     criteria JSON NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Benefits (
+CREATE TABLE IF NOT EXISTS Benefits (
     id INT AUTO_INCREMENT PRIMARY KEY,
     scheme_id INT,
     name VARCHAR(100) NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE Benefits (
     FOREIGN KEY (scheme_id) REFERENCES Schemes(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Applications (
+CREATE TABLE IF NOT EXISTS Applications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     applicant_id INT,
     scheme_id INT,
@@ -52,18 +52,29 @@ CREATE TABLE Applications (
     FOREIGN KEY (scheme_id) REFERENCES Schemes(id) ON DELETE CASCADE
 );
 
+-- Create the users table
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL, -- You should hash the passwords
+    email VARCHAR(100) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create the roles table
 CREATE TABLE IF NOT EXISTS roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
+    role_name VARCHAR(50) NOT NULL UNIQUE,
     description TEXT
 );
 
+-- Create the user_roles table
 CREATE TABLE IF NOT EXISTS user_roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     role_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (role_id) REFERENCES roles(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
 -- Insert into Administrators
@@ -104,3 +115,30 @@ VALUES (1, 1, 'approved');
 
 INSERT INTO Applications (applicant_id, scheme_id, status) 
 VALUES (2, 2, 'pending');
+
+INSERT INTO roles (role_name, description) VALUES ('Admin', 'Administrator with full access');
+INSERT INTO roles (role_name, description) VALUES ('User', 'Regular user with limited access');
+
+INSERT INTO applicants (name, employment_status, sex, date_of_birth, role_id)
+VALUES ('John Doe', 'Employed', 'Male', '1990-01-01', 1);
+
+INSERT INTO schemes (scheme_name, description) VALUES ('Financial Assistance Scheme', 'Helps low-income families');
+
+
+-- Insert dummy data into the roles table
+INSERT INTO roles (role_name, description) VALUES
+('Reviewer', 'Can review applications'),
+('Processor', 'Can process applications'),
+('Approver', 'Can approve applications');
+
+-- Insert dummy data into the users table
+INSERT INTO users (username, password, email) VALUES
+('john_doe', 'hashed_password1', 'john@example.com'),
+('jane_doe', 'hashed_password2', 'jane@example.com'),
+('admin', 'hashed_password3', 'admin@example.com');
+
+-- Associate users with roles
+INSERT INTO user_roles (user_id, role_id) VALUES
+(1, 1), -- john_doe as Reviewer
+(2, 2), -- jane_doe as Processor
+(3, 3); -- admin as Approver
