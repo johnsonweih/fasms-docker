@@ -5,18 +5,18 @@ const applicantsController = require('../controllers/applicantsController');
 const { authMiddleware, authorizeRole } = require('../middleware/authMiddleware');
 
 // Route to get all applicants
-router.get('/', authMiddleware, authorizeRole('admin'), applicantsController.getAllApplicants);
+router.get('/', authMiddleware, authorizeRole('Admin'), applicantsController.getAllApplicants);
 
 // Route to create a new applicant
-router.post('/', authMiddleware, authorizeRole('admin'), applicantsController.createApplicant);
+router.post('/', authMiddleware, authorizeRole('Admin'), applicantsController.createApplicant);
 
 // Route to get a specific applicant by ID
-router.get('/:id', authMiddleware, authorizeRole('admin'), applicantsController.getApplicantById);
+router.get('/:id', authMiddleware, authorizeRole('Admin'), applicantsController.getApplicantById);
 
 // Route to update a specific applicant by ID
-router.put('/:id', authMiddleware, authorizeRole('admin'), applicantsController.updateApplicantById);
+router.put('/:id', authMiddleware, authorizeRole('Admin'), applicantsController.updateApplicant);
 
 // Route to delete a specific applicant by ID
-router.delete('/:id', authMiddleware, authorizeRole('admin'), applicantsController.deleteApplicantById);
+router.delete('/:id', authMiddleware, authorizeRole('Admin'), applicantsController.deleteApplicant);
 
 module.exports = router;

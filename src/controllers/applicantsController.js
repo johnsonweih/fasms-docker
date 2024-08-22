@@ -1,6 +1,6 @@
 // src/controllers/applicantsController.js
 
-const { Applicant } = require('../models/applicant');
+const Applicant  = require('../models/applicant');
 
 // Get all applicants
 async function getAllApplicants(req, res) {
@@ -15,10 +15,12 @@ async function getAllApplicants(req, res) {
 // Create a new applicant
 async function createApplicant(req, res) {
   try {
-    const newApplicantId = await Applicant.createApplicant(req.body);
+    const { applicant, householdMembers } = req.body; // Expecting a structure with applicant and householdMembers
+
+    const newApplicantId = await Applicant.createApplicantWithHousehold(applicant, householdMembers);
     res.status(201).json({ id: newApplicantId });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating applicant', error });
+    res.status(500).json({ message: 'Error creating applicant and household', error });
   }
 }
 

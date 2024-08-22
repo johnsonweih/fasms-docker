@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const promisePool = require('../../config/dbConfig');
+const db = require('../../config/dbConfig');
 
 // Sample readable password for demonstration purposes
 const readablePassword = 'password123';
@@ -21,7 +21,7 @@ const login = async (req, res) => {
     try {
         
         // Check user credentials
-        const [rows] = await promisePool.query('SELECT * FROM users WHERE username = ?', [username]);
+        const [rows] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
         if (rows.length === 0) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }

@@ -4,27 +4,64 @@ const db = require('../../config/dbConfig'); // Import the centralized DB config
 
 // Define methods for interacting with the `applicants` table
 
-// Get all applicants
+// Get all applicants with household information
 async function getAllApplicants() {
-  const [rows] = await db.query('SELECT * FROM applicants');
-  return rows;
+  const [applicantRows] = await db.query('SELECT * FROM applicants');
+  const applicants = await Promise.all(applicantRows.map(async applicant => {
+    const [householdRows] = await db.query('SELECT * FROM household WHERE applicant_id = ?', [applicant.id]);
+    return {
+      ...applicant,
+      household: householdRows,
+    };
+  }));
+  return applicants;
 }
 
 // Create a new applicant
-async function createApplicant(applicant) {
-  const { name, employment_status, sex, date_of_birth } = applicant;
-  const [result] = await db.query(
-    'INSERT INTO applicants (name, employment_status, sex, date_of_birth) VALUES (?, ?, ?, ?)',
-    [name, employment_status, sex, date_of_birth]
-  );
-  return result.insertId;
+async function createApplicantWithHousehold(applicant, householdMembers) {
+  const { name, employment_status, sex, date_of_birth, marital_status } = applicant;
+
+  try {
+    const [result] = await db.query(
+      'INSERT INTO applicants (name, employment_status, sex, date_of_birth, marital_status) VALUES (?, ?, ?, ?, ?)',
+      [name, employment_status, sex, date_of_birth, marital_status]
+    );
+    const applicantId = result.insertId;
+
+    // Insert household members
+    for (const member of householdMembers) {
+      const { name, employment_status, sex, date_of_birth, relation } = member;
+      await db.query(
+        'INSERT INTO household (applicant_id, name, employment_status, sex, date_of_birth, relation) VALUES (?, ?, ?, ?, ?, ?)',
+        [applicantId, name, employment_status, sex, date_of_birth, relation]
+      );
+    }
+    
+    return applicantId;
+  }
+  catch (error) {
+    console.log('Error creating applicant and household');
+    throw error;
+  }
+
 }
 
-// Get an applicant by ID
+// Get an applicant by ID with household information
 async function getApplicantById(id) {
-  const [rows] = await db.query('SELECT * FROM applicants WHERE id = ?', [id]);
-  return rows[0];
+  const [applicantRows] = await db.query('SELECT * FROM applicants WHERE id = ?', [id]);
+  const applicant = applicantRows[0];
+  
+  if (applicant) {
+    const [householdRows] = await db.query('SELECT * FROM household WHERE applicant_id = ?', [applicant.id]);
+    return {
+      ...applicant,
+      household: householdRows,
+    };
+  } else {
+    return null;
+  }
 }
+
 
 // Update an applicant
 async function updateApplicant(id, applicant) {
@@ -42,7 +79,7 @@ async function deleteApplicant(id) {
 
 module.exports = {
   getAllApplicants,
-  createApplicant,
+  createApplicantWithHousehold,
   getApplicantById,
   updateApplicant,
   deleteApplicant

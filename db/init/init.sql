@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS Administrators (
+CREATE TABLE IF NOT EXISTS administrators (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS Administrators (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS Applicants (
+CREATE TABLE IF NOT EXISTS applicants (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     employment_status ENUM('employed', 'unemployed') NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS Applicants (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS Household (
+CREATE TABLE IF NOT EXISTS household (
     id INT AUTO_INCREMENT PRIMARY KEY,
     applicant_id INT,
     name VARCHAR(100) NOT NULL,
@@ -24,32 +24,40 @@ CREATE TABLE IF NOT EXISTS Household (
     sex ENUM('male', 'female') NOT NULL,
     date_of_birth DATE NOT NULL,
     relation ENUM('son', 'daughter', 'spouse', 'parent', 'sibling') NOT NULL,
-    FOREIGN KEY (applicant_id) REFERENCES Applicants(id) ON DELETE CASCADE
+    FOREIGN KEY (applicant_id) REFERENCES applicants(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Schemes (
+CREATE TABLE IF NOT EXISTS schemes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    criteria JSON NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS Benefits (
+CREATE TABLE IF NOT EXISTS criteria (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    scheme_id INT NOT NULL,
+    employment_status ENUM('employed', 'unemployed') DEFAULT NULL,
+    has_children BOOLEAN DEFAULT NULL,
+    children_school_level ENUM('primary', 'secondary', 'tertiary') DEFAULT NULL,
+    FOREIGN KEY (scheme_id) REFERENCES schemes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS benefits (
     id INT AUTO_INCREMENT PRIMARY KEY,
     scheme_id INT,
     name VARCHAR(100) NOT NULL,
     amount DECIMAL(10, 2),
-    FOREIGN KEY (scheme_id) REFERENCES Schemes(id) ON DELETE CASCADE
+    FOREIGN KEY (scheme_id) REFERENCES schemes(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Applications (
+CREATE TABLE IF NOT EXISTS applications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     applicant_id INT,
     scheme_id INT,
     status ENUM('pending', 'approved', 'rejected') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (applicant_id) REFERENCES Applicants(id) ON DELETE CASCADE,
-    FOREIGN KEY (scheme_id) REFERENCES Schemes(id) ON DELETE CASCADE
+    FOREIGN KEY (applicant_id) REFERENCES applicants(id) ON DELETE CASCADE,
+    FOREIGN KEY (scheme_id) REFERENCES schemes(id) ON DELETE CASCADE
 );
 
 -- Create the users table
@@ -78,42 +86,45 @@ CREATE TABLE IF NOT EXISTS user_roles (
 );
 
 -- Insert into Administrators
-INSERT INTO Administrators (username, password, email) 
+INSERT INTO administrators (username, password, email) 
 VALUES ('admin1', 'hashed_password', 'admin1@example.com');
 
 -- Insert into Applicants
-INSERT INTO Applicants (name, employment_status, sex, date_of_birth, marital_status) 
+INSERT INTO applicants (name, employment_status, sex, date_of_birth, marital_status) 
 VALUES ('James', 'unemployed', 'male', '1990-07-01', 'single');
 
-INSERT INTO Applicants (name, employment_status, sex, date_of_birth, marital_status) 
+INSERT INTO applicants (name, employment_status, sex, date_of_birth, marital_status) 
 VALUES ('Mary', 'unemployed', 'female', '1984-10-06', 'married');
 
 -- Insert into Household
-INSERT INTO Household (applicant_id, name, employment_status, sex, date_of_birth, relation) 
+INSERT INTO household (applicant_id, name, employment_status, sex, date_of_birth, relation) 
 VALUES (2, 'Gwen', 'unemployed', 'female', '2016-02-01', 'daughter');
 
-INSERT INTO Household (applicant_id, name, employment_status, sex, date_of_birth, relation) 
+INSERT INTO household (applicant_id, name, employment_status, sex, date_of_birth, relation) 
 VALUES (2, 'Jayden', 'unemployed', 'male', '2018-03-15', 'son');
 
 -- Insert into Schemes
-INSERT INTO Schemes (name, criteria) 
+INSERT INTO schemes (name, criteria) 
 VALUES ('Retrenchment Assistance Scheme', '{"employment_status": "unemployed"}');
 
-INSERT INTO Schemes (name, criteria) 
+INSERT INTO schemes (name, criteria) 
 VALUES ('Retrenchment Assistance Scheme (families)', '{"employment_status": "unemployed", "has_children": {"school_level": "primary"}}');
 
 -- Insert into Benefits
-INSERT INTO Benefits (scheme_id, name, amount) 
+INSERT INTO benefits (scheme_id, name, amount) 
 VALUES (1, 'SkillsFuture Credits', 500.00);
 
-INSERT INTO Benefits (scheme_id, name, amount) 
+INSERT INTO benefits (scheme_id, name, amount) 
+VALUES (2, 'SkillsFuture Credits', 500.00);
+
+INSERT INTO benefits (scheme_id, name, amount) 
 VALUES (2, 'Daily School Meal Vouchers', NULL);
 
 -- Insert into Applications
-INSERT INTO Applications (applicant_id, scheme_id, status) 
+INSERT INTO applications (applicant_id, scheme_id, status) 
 VALUES (1, 1, 'approved');
 
-INSERT INTO Applications (applicant_id, scheme_id, status) 
+INSERT INTO applications (applicant_id, scheme_id, status) 
 VALUES (2, 2, 'pending');
 
 INSERT INTO roles (role_name, description) VALUES ('Admin', 'Administrator with full access');

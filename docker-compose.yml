@@ -11,7 +11,7 @@ services:
       DB_USER: root
       DB_PASSWORD: P@ssw0rd_2024
       DB_NAME: fasms_dev
-      JWT_SECRET: your_jwt_secret
+      JWT_SECRET: myStrongJwtSecretKey123!@#
     volumes:
       - .:/usr/src/app  # This maps your local code to the container
     depends_on:
