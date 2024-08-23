@@ -23,7 +23,10 @@ services:
 
   # MySQL Database Service
   db:
-    image: mysql:8.0
+      # image: mysql:8.0
+    build:
+      context: .
+      dockerfile: Dockerfile.db
     container_name: db
     restart: always
     environment:
