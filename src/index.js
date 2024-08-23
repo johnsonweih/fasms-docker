@@ -10,7 +10,7 @@ app.use(express.json());
 
 // Route for "Hello World"
 app.get('/', (req, res) => {
-    res.send('Hello World');
+    res.send('Welcome to Financial Assistance Scheme Management System');
 });
 
 // Use routes

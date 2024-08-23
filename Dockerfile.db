@@ -1,0 +1,11 @@
+# Use the official MySQL image as a base
+FROM mysql:8.0
+
+# Set environment variables for MySQL
+ENV MYSQL_ROOT_PASSWORD=P@ssw0rd_2024
+ENV MYSQL_DATABASE=fasms_dev
+
+# Copy the SQL dump file into the container
+COPY fasms_dev_dump.sql /docker-entrypoint-initdb.d/
+
+# The MySQL image will automatically run the SQL file to initialize the database

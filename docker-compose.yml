@@ -1,7 +1,10 @@
+version: '3.8'
+
 services:
   # Node.js Backend Service
   web:
     build: .
+    container_name: web
     ports:
       - "3000:3000"
     environment:
@@ -13,26 +16,28 @@ services:
       DB_NAME: fasms_dev
       JWT_SECRET: myStrongJwtSecretKey123!@#
     volumes:
-      - .:/usr/src/app  # This maps your local code to the container
+      - .:/usr/src/app  # Maps your local code to the container, useful for development
+      - /usr/src/app/node_modules  # Ensures node_modules inside the container are not overwritten
     depends_on:
       - db
 
   # MySQL Database Service
   db:
     image: mysql:8.0
+    container_name: db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: P@ssw0rd_2024
       MYSQL_DATABASE: fasms_dev
     ports:
       - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-      - ./db/init:/docker-entrypoint-initdb.d
+    # volumes:
+    #   - db_data:/var/lib/mysql  # Named volume for persisting database data
 
   # phpMyAdmin Service
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
     restart: always
     ports:
       - "8080:80"
@@ -42,5 +47,6 @@ services:
     depends_on:
       - db
 
-volumes:
-  db_data:
+# volumes:
+#   db_data:
+#     # driver: local
