@@ -1,3 +1,5 @@
+// src/models/scheme.js
+
 const db = require('../../config/dbConfig');
 
 // Get all schemes
@@ -20,7 +22,12 @@ async function getCriteriaBySchemeId(schemeId) {
 
 // Get all benefits for a scheme
 async function getBenefitsBySchemeId(schemeId) {
-    const [benefits] = await db.query('SELECT * FROM benefits WHERE scheme_id = ?', [schemeId]);
+    const [benefits] = await db.query(`
+        SELECT b.id, b.name, b.amount
+        FROM benefits b
+        JOIN benefit_scheme sb ON b.id = sb.benefit_id
+        WHERE sb.scheme_id = ?
+    `, [schemeId]);
     return benefits;
 }
 
@@ -34,10 +41,11 @@ async function getEligibleSchemes({ employment_status, has_children, children_sc
         : 'c.children_school_level IS NULL';
 
     const query = `
-        SELECT s.name, c.employment_status, c.has_children, b.name AS benefit_name, b.amount
+        SELECT s.id, s.name, c.employment_status, c.has_children, c.children_school_level, b.id AS benefit_id, b.name AS benefit_name, b.amount
         FROM schemes s
         LEFT JOIN criteria c ON s.id = c.scheme_id
-        LEFT JOIN benefits b ON s.id = b.scheme_id
+        LEFT JOIN benefit_scheme sb ON s.id = sb.scheme_id
+        LEFT JOIN benefits b ON sb.benefit_id = b.id
         WHERE (c.employment_status IS NULL OR c.employment_status = ?)
         AND (c.has_children IS NULL OR c.has_children = ?)
         AND (${childrenSchoolLevelConditions})

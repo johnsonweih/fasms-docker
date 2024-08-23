@@ -44,11 +44,18 @@ CREATE TABLE IF NOT EXISTS criteria (
 
 CREATE TABLE IF NOT EXISTS benefits (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    scheme_id INT,
     name VARCHAR(100) NOT NULL,
     amount DECIMAL(10, 2),
+);
+
+CREATE TABLE IF NOT EXISTS benefit_scheme (
+    benefit_id INT,
+    scheme_id INT,
+    PRIMARY KEY (benefit_id, scheme_id),
+    FOREIGN KEY (benefit_id) REFERENCES benefits(id) ON DELETE CASCADE,
     FOREIGN KEY (scheme_id) REFERENCES schemes(id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE IF NOT EXISTS applications (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -56,6 +63,7 @@ CREATE TABLE IF NOT EXISTS applications (
     scheme_id INT,
     status ENUM('pending', 'approved', 'rejected') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status_last_modified_at TIMESTAMP DEFAULT NULL,
     FOREIGN KEY (applicant_id) REFERENCES applicants(id) ON DELETE CASCADE,
     FOREIGN KEY (scheme_id) REFERENCES schemes(id) ON DELETE CASCADE
 );
@@ -104,21 +112,18 @@ INSERT INTO household (applicant_id, name, employment_status, sex, date_of_birth
 VALUES (2, 'Jayden', 'unemployed', 'male', '2018-03-15', 'son');
 
 -- Insert into Schemes
-INSERT INTO schemes (name, criteria) 
-VALUES ('Retrenchment Assistance Scheme', '{"employment_status": "unemployed"}');
+INSERT INTO schemes (name) 
+VALUES ('Retrenchment Assistance Scheme');
 
 INSERT INTO schemes (name, criteria) 
-VALUES ('Retrenchment Assistance Scheme (families)', '{"employment_status": "unemployed", "has_children": {"school_level": "primary"}}');
+VALUES ('Retrenchment Assistance Scheme (families)');
 
 -- Insert into Benefits
-INSERT INTO benefits (scheme_id, name, amount) 
-VALUES (1, 'SkillsFuture Credits', 500.00);
+INSERT INTO benefits (name, amount) 
+VALUES ('SkillsFuture Credits', 500.00);
 
-INSERT INTO benefits (scheme_id, name, amount) 
-VALUES (2, 'SkillsFuture Credits', 500.00);
-
-INSERT INTO benefits (scheme_id, name, amount) 
-VALUES (2, 'Daily School Meal Vouchers', NULL);
+INSERT INTO benefits (name, amount) 
+VALUES ('Daily School Meal Vouchers', NULL);
 
 -- Insert into Applications
 INSERT INTO applications (applicant_id, scheme_id, status) 
@@ -135,6 +140,10 @@ VALUES ('John Doe', 'Employed', 'Male', '1990-01-01', 1);
 
 INSERT INTO schemes (scheme_name, description) VALUES ('Financial Assistance Scheme', 'Helps low-income families');
 
+-- Example: Associate benefit with ID 1 with schemes 1 and 2
+INSERT INTO benefit_scheme (benefit_id, scheme_id) VALUES (1, 1), (1, 2);
+-- Example: Associate benefit with ID 2 with scheme 1
+INSERT INTO benefit_scheme (benefit_id, scheme_id) VALUES (2, 1);
 
 -- Insert dummy data into the roles table
 INSERT INTO roles (role_name, description) VALUES

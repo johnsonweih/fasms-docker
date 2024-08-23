@@ -1,11 +1,54 @@
+// src/controllers/schemeController.js
+
 const Scheme = require('../models/scheme');
 const Applicant  = require('../models/applicant');
+const utils = require('../utils/utils');
 
 // Controller to get all schemes
 async function getAllSchemes(req, res) {
     try {
         const schemes = await Scheme.getAllSchemes();
-        res.status(200).json(schemes);
+        console.log('schemes retrieved: ',schemes);
+
+        const schemesMap = {};
+
+        for (const scheme of schemes) {
+            // Get criteria for the scheme
+            const criteria = await Scheme.getCriteriaBySchemeId(scheme.id);
+            // Get benefits for the scheme
+            const benefits = await Scheme.getBenefitsBySchemeId(scheme.id);
+
+            // Format the criteria and benefits
+            const formattedCriteria = criteria.map(c => ({
+                employment_status: c.employment_status || undefined,
+                has_children: c.has_children ? { school_level: c.children_school_level || undefined } : undefined
+            }));
+
+            // Check if the scheme already exists in the map
+            if (!schemesMap[scheme.id]) {
+                schemesMap[scheme.id] = {
+                    id: scheme.id,
+                    name: scheme.name,
+                    criteria: formattedCriteria.length ? formattedCriteria[0] : {}, // Only one criteria object should exist per scheme
+                    benefits: []
+                };
+            }
+
+            // Add benefits to the scheme
+            benefits.forEach(b => {
+                schemesMap[scheme.id].benefits.push({
+                    id: b.id,
+                    name: b.name,
+                    amount: b.amount
+                });
+            });
+        }
+
+        // Convert the schemes object to an array
+        const schemesArray = Object.values(schemesMap);
+        
+        res.status(200).json({ schemes: schemesArray });
+
     } catch (error) {
         res.status(500).json({ message: 'Error fetching schemes', error });
     }
@@ -14,7 +57,8 @@ async function getAllSchemes(req, res) {
 // Controller to get all schemes that an applicant is eligible to apply for
 async function getEligibleSchemes(req, res) {
     try {
-        const applicantId = req.query.applicant;
+        const sanitizedQuery = utils.sanitizeObject(req.query);
+        const applicantId = sanitizedQuery.applicant;
         if (!applicantId) {
             return res.status(400).json({ message: 'Applicant ID is required' });
         }
@@ -26,7 +70,8 @@ async function getEligibleSchemes(req, res) {
         }
 
         // Extract relevant details from the applicant
-        const { employment_status, household } = applicant;
+        const sanitizedApplicant = utils.sanitizeObject(applicant);
+        const { employment_status, household } = sanitizedApplicant;
 
         // Determine if the applicant has children and extract children's school levels
         let has_children = false;
@@ -49,16 +94,18 @@ async function getEligibleSchemes(req, res) {
 
         // Fetch eligible schemes
         const eligibleSchemes = await Scheme.getEligibleSchemes(applicantInfo);
+        const sanitizedEligibleSchemes = eligibleSchemes.map(utils.sanitizeObject);
 
         // Transform the eligible schemes into the desired structure
-        const formattedSchemes = eligibleSchemes.reduce((acc, scheme) => {
+        const formattedSchemes = sanitizedEligibleSchemes.reduce((acc, scheme) => {
             const {
                 id,
                 name,
                 employment_status,
                 has_children,
                 benefit_name,
-                amount
+                amount,
+                children_school_level: eligibleSchoolLevel
             } = scheme;
 
             // Initialize scheme if it doesn't exist
@@ -68,7 +115,7 @@ async function getEligibleSchemes(req, res) {
                     name,
                     criteria: {
                         employment_status: employment_status || undefined,
-                        has_children: has_children ? { school_level: `${children_school_level.join(', ')}` } : undefined
+                        has_children: has_children ? { school_level: eligibleSchoolLevel } : undefined
                     },
                     benefits: []
                 };
@@ -94,7 +141,6 @@ async function getEligibleSchemes(req, res) {
         res.status(500).json({ message: 'Error fetching eligible schemes', error });
     }
 }
-
 
 module.exports = {
     getAllSchemes,
