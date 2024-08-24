@@ -8,35 +8,42 @@ const utils = require('../utils/utils');
 async function getAllSchemes(req, res) {
     try {
         const schemes = await Scheme.getAllSchemes();
-        console.log('schemes retrieved: ',schemes);
 
         const schemesMap = {};
 
         for (const scheme of schemes) {
+            // Sanitize the scheme object
+            const sanitizedScheme = utils.sanitizeObject(scheme);
+
             // Get criteria for the scheme
-            const criteria = await Scheme.getCriteriaBySchemeId(scheme.id);
+            const criteria = await Scheme.getCriteriaBySchemeId(sanitizedScheme.id);
+            // Sanitize the criteria data
+            const sanitizedCriteria = criteria.map(utils.sanitizeObject);
+
             // Get benefits for the scheme
-            const benefits = await Scheme.getBenefitsBySchemeId(scheme.id);
+            const benefits = await Scheme.getBenefitsBySchemeId(sanitizedScheme.id);
+            // Sanitize the benefits data
+            const sanitizedBenefits = benefits.map(utils.sanitizeObject);
 
             // Format the criteria and benefits
-            const formattedCriteria = criteria.map(c => ({
+            const formattedCriteria = sanitizedCriteria.map(c => ({
                 employment_status: c.employment_status || undefined,
                 has_children: c.has_children ? { school_level: c.children_school_level || undefined } : undefined
             }));
 
             // Check if the scheme already exists in the map
-            if (!schemesMap[scheme.id]) {
-                schemesMap[scheme.id] = {
-                    id: scheme.id,
-                    name: scheme.name,
+            if (!schemesMap[sanitizedScheme.id]) {
+                schemesMap[sanitizedScheme.id] = {
+                    id: sanitizedScheme.id,
+                    name: sanitizedScheme.name,
                     criteria: formattedCriteria.length ? formattedCriteria[0] : {}, // Only one criteria object should exist per scheme
                     benefits: []
                 };
             }
 
             // Add benefits to the scheme
-            benefits.forEach(b => {
-                schemesMap[scheme.id].benefits.push({
+            sanitizedBenefits.forEach(b => {
+                schemesMap[sanitizedScheme.id].benefits.push({
                     id: b.id,
                     name: b.name,
                     amount: b.amount

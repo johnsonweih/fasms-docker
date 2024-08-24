@@ -7,8 +7,10 @@ const { authMiddleware, authorizeRole } = require('../middleware/authMiddleware'
 
 // Middleware to validate request body
 const validateApplicant = [
-    body('name').isString().withMessage('Name must be a string'),
-    body('date_of_birth').optional().isISO8601().withMessage('Date of birth must be a valid date'),
+    body('applicant.name').isString().withMessage('Name must be a string'),
+    body('applicant.date_of_birth').optional().isISO8601().withMessage('Date of birth must be a valid date'),
+    body('applicant.nric'.toString()).matches(/^[STFG]\d{7}[A-Z]$/).withMessage('Invalid NRIC format'),
+
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

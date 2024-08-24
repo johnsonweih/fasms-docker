@@ -38,9 +38,13 @@ async function createApplicant(req, res) {
     const { applicant, householdMembers } = sanitizedData;
 
     const newApplicantId = await Applicant.createApplicantWithHousehold(applicant, householdMembers);
-    res.status(201).json({ id: newApplicantId });
+    res.status(201).json({ id: newApplicantId, message: "Applicant created successfully." });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating applicant and household', error });
+    if (error.message === 'Applicant with the same NRIC already exists.') {
+      res.status(409).json({ message: 'Applicant with the same NRIC already exists.' });
+    } else {
+      res.status(500).json({ message: 'Error creating applicant and household', error });
+    }  
   }
 }
 

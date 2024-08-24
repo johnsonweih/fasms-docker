@@ -60,13 +60,15 @@ DROP TABLE IF EXISTS `applicants`;
 CREATE TABLE `applicants` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
+  `hashed_nric` varchar(64) DEFAULT NULL,
   `employment_status` enum('employed','unemployed') NOT NULL,
   `sex` enum('male','female') NOT NULL,
   `date_of_birth` date NOT NULL,
   `marital_status` enum('single','married','widowed','divorced') NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `hashed_nric` (`hashed_nric`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,7 +76,7 @@ CREATE TABLE `applicants` (
 --
 
 /*!40000 ALTER TABLE `applicants` DISABLE KEYS */;
-INSERT INTO `applicants` (`id`, `name`, `employment_status`, `sex`, `date_of_birth`, `marital_status`, `created_at`) VALUES (1,'James','unemployed','male','1990-07-01','single','2024-08-22 05:24:59'),(2,'Mary','unemployed','female','1984-10-06','married','2024-08-22 05:24:59'),(3,'Andy Hii','employed','male','1985-05-15','married','2024-08-22 11:58:27');
+INSERT INTO `applicants` (`id`, `name`, `hashed_nric`, `employment_status`, `sex`, `date_of_birth`, `marital_status`, `created_at`) VALUES (1,'James',NULL,'unemployed','male','1990-07-01','single','2024-08-22 05:24:59'),(2,'Mary',NULL,'unemployed','female','1984-10-06','married','2024-08-22 05:24:59'),(3,'Andy Hii',NULL,'employed','male','1985-05-15','married','2024-08-22 11:58:27'),(4,'Johnny Hii','dc3ff206a9f45fce03bce65efd019cc9e2b3b7d8c62dedcc10b06dd19e3d46ae','employed','male','1985-05-15','married','2024-08-24 10:10:14'),(5,'Danny Hii','70f2b95bdb288b37de66ef0548f97f124e84d68f700efdd893f7aa48462ad6f9','employed','male','1985-05-15','married','2024-08-24 11:32:48');
 /*!40000 ALTER TABLE `applicants` ENABLE KEYS */;
 
 --
@@ -96,7 +98,7 @@ CREATE TABLE `applications` (
   KEY `scheme_id` (`scheme_id`),
   CONSTRAINT `applications_ibfk_1` FOREIGN KEY (`applicant_id`) REFERENCES `applicants` (`id`) ON DELETE CASCADE,
   CONSTRAINT `applications_ibfk_2` FOREIGN KEY (`scheme_id`) REFERENCES `schemes` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -104,7 +106,7 @@ CREATE TABLE `applications` (
 --
 
 /*!40000 ALTER TABLE `applications` DISABLE KEYS */;
-INSERT INTO `applications` (`id`, `applicant_id`, `scheme_id`, `status`, `created_at`, `status_last_modified_at`) VALUES (1,1,1,'approved','2024-08-22 05:27:21',NULL),(2,2,2,'pending','2024-08-22 05:27:21',NULL),(3,2,2,'approved','2024-08-23 06:36:01','2024-08-23 06:44:59');
+INSERT INTO `applications` (`id`, `applicant_id`, `scheme_id`, `status`, `created_at`, `status_last_modified_at`) VALUES (1,1,1,'approved','2024-08-22 05:27:21',NULL),(2,2,2,'pending','2024-08-22 05:27:21',NULL),(3,2,2,'approved','2024-08-23 06:36:01','2024-08-23 06:44:59'),(4,2,2,'rejected','2024-08-24 09:17:55','2024-08-24 09:58:05');
 /*!40000 ALTER TABLE `applications` ENABLE KEYS */;
 
 --
@@ -201,7 +203,7 @@ CREATE TABLE `household` (
   PRIMARY KEY (`id`),
   KEY `applicant_id` (`applicant_id`),
   CONSTRAINT `household_ibfk_1` FOREIGN KEY (`applicant_id`) REFERENCES `applicants` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -209,7 +211,7 @@ CREATE TABLE `household` (
 --
 
 /*!40000 ALTER TABLE `household` DISABLE KEYS */;
-INSERT INTO `household` (`id`, `applicant_id`, `name`, `employment_status`, `sex`, `date_of_birth`, `relation`, `school_level`) VALUES (1,2,'Gwen','unemployed','female','2016-02-01','daughter','primary'),(2,2,'Jayden','unemployed','male','2018-03-15','son','secondary'),(3,3,'Alison Ting','employed','female','1987-07-10','spouse',NULL),(4,3,'Johnny Hii','unemployed','male','2010-09-12','son','primary');
+INSERT INTO `household` (`id`, `applicant_id`, `name`, `employment_status`, `sex`, `date_of_birth`, `relation`, `school_level`) VALUES (1,2,'Gwen','unemployed','female','2016-02-01','daughter','primary'),(2,2,'Jayden','unemployed','male','2018-03-15','son','secondary'),(3,3,'Alison Ting','employed','female','1987-07-10','spouse',NULL),(4,3,'Johnny Hii','unemployed','male','2010-09-12','son','primary'),(5,4,'Pang Ting','employed','female','1987-07-10','spouse',NULL),(6,4,'Leslie Hii','unemployed','male','2010-09-12','daughter',NULL),(7,5,'Ting Pang','employed','female','1987-07-10','spouse',NULL),(8,5,'Russell Hii','unemployed','male','2010-09-12','daughter',NULL);
 /*!40000 ALTER TABLE `household` ENABLE KEYS */;
 
 --
@@ -322,4 +324,4 @@ INSERT INTO `users` (`id`, `username`, `password`, `email`, `created_at`) VALUES
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-24  1:28:01
+-- Dump completed on 2024-08-24 19:34:30

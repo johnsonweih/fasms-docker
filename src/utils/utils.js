@@ -2,6 +2,7 @@
  * Utility functions for sanitizing and transforming data
  */
 const moment = require('moment-timezone');
+const crypto = require('crypto');
 
 // Function to remove sensitive characters from a string
 function sanitizeString(input) {
@@ -89,9 +90,6 @@ function transformDatesInObject(obj) {
         if (obj.hasOwnProperty(key)) {
           const value = obj[key];
           
-          // Log the type and value for debugging
-          console.log(`Processing key: ${key}, value: ${value}`);
-          
           if (value instanceof Date) {
             // Transform JavaScript Date object to formatted string
             const formattedDate = moment(value).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm');
@@ -124,6 +122,10 @@ function transformDatesInObject(obj) {
   }
 }
 
+// Hashing function for NRIC
+function hashNRIC(nric) {
+  return crypto.createHash('sha256').update(nric).digest('hex');
+}
 
 // Export utility functions
 module.exports = {
@@ -131,4 +133,5 @@ module.exports = {
     sanitizeObject,
     transformDateFormat,
     transformDatesInObject,
+    hashNRIC
 };

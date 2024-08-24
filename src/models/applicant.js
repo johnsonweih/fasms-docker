@@ -1,6 +1,7 @@
 // src/models/applicant.js
 
 const db = require('../../config/dbConfig'); // Import the centralized DB config
+const utils = require('../utils/utils');
 
 // Define methods for interacting with the `applicants` table
 
@@ -19,12 +20,27 @@ async function getAllApplicants() {
 
 // Create a new applicant
 async function createApplicantWithHousehold(applicant, householdMembers) {
-  const { name, employment_status, sex, date_of_birth, marital_status } = applicant;
+  const { name, employment_status, sex, date_of_birth, marital_status, nric } = applicant;
 
   try {
+
+    // Hash the NRIC
+    const hashedNRIC = utils.hashNRIC(nric);
+
+    // Check if the applicant with the same hashed NRIC already exists
+    const [existingApplicants] = await db.query(
+      'SELECT id FROM applicants WHERE hashed_nric = ?',
+      [hashedNRIC]
+    );
+
+    if (existingApplicants.length > 0) {
+      throw new Error('Applicant with the same NRIC already exists.');
+    }
+
+    // Insert new applicant
     const [result] = await db.query(
-      'INSERT INTO applicants (name, employment_status, sex, date_of_birth, marital_status) VALUES (?, ?, ?, ?, ?)',
-      [name, employment_status, sex, date_of_birth, marital_status]
+      'INSERT INTO applicants (name, employment_status, sex, date_of_birth, marital_status, hashed_nric) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, employment_status, sex, date_of_birth, marital_status, hashedNRIC]
     );
     const applicantId = result.insertId;
 
@@ -63,24 +79,8 @@ async function getApplicantById(id) {
 }
 
 
-// Update an applicant
-async function updateApplicant(id, applicant) {
-  const { name, employment_status, sex, date_of_birth } = applicant;
-  await db.query(
-    'UPDATE applicants SET name = ?, employment_status = ?, sex = ?, date_of_birth = ? WHERE id = ?',
-    [name, employment_status, sex, date_of_birth, id]
-  );
-}
-
-// Delete an applicant
-async function deleteApplicant(id) {
-  await db.query('DELETE FROM applicants WHERE id = ?', [id]);
-}
-
 module.exports = {
   getAllApplicants,
   createApplicantWithHousehold,
-  getApplicantById,
-  updateApplicant,
-  deleteApplicant
+  getApplicantById
 };

@@ -1,3 +1,4 @@
+// controllers/authController.js
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('../../config/dbConfig');
@@ -14,8 +15,6 @@ const generateHashedPassword = async (password) => {
 
 const login = async (req, res) => {
 
-    // const hashedPassword = await generateHashedPassword(readablePassword);
-    // console.log('Hashed Password:', hashedPassword);
     const { username, password } = req.body;
 
     try {
@@ -25,7 +24,7 @@ const login = async (req, res) => {
         if (rows.length === 0) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
-        console.log(rows);
+
         const user = rows[0];
         const match = await bcrypt.compare(password, user.password);
         if (!match) {

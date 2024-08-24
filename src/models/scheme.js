@@ -33,7 +33,6 @@ async function getBenefitsBySchemeId(schemeId) {
 
 // Get eligible schemes for an applicant
 async function getEligibleSchemes({ employment_status, has_children, children_school_level }) {
-    console.log({ employment_status, has_children, children_school_level });
 
     // Convert children_school_level array to a comma-separated string for SQL query
     const childrenSchoolLevelConditions = children_school_level.length
