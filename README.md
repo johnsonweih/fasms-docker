@@ -65,12 +65,16 @@ Follow the instructions below based on your operating system.
 1. **Install Docker Desktop**:
    * Follow the instructions at Install Docker Desktop on Linus [Docker Desktop for Linux](https://docs.docker.com/desktop/install/linux-install/).
    * Open the .dmg file and drag Docker to your Applications folder.
-2. **Open Terminal**.
-3. **Clone the repository**:
+2. **Install Docker Compose**.
+   ```bash
+   sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep tag_name | cut -d\" -f4)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   sudo chmod +x /usr/local/bin/docker-compose
+3. **Open Terminal:**:
+4. **Clone the repository**:
    ```bash
    git clone https://github.com/your-repo/your-project.git
    cd your-project
-4. **Log in to Docker Hub:**:
+5. **Log in to Docker Hub:**:
    ```bash
    docker login
 5. **Pull Docker images from Docker Hub:**:
@@ -82,3 +86,10 @@ Follow the instructions below based on your operating system.
 7. **Access the application:**:
    * Web application: http://localhost:3000
    * phpMyAdmin: http://localhost:8080
+
+
+## Stopping the Application
+
+**To stop the application, run**:
+   ```bash
+   docker-compose down
