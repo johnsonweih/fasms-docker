@@ -22,7 +22,7 @@ Follow the instructions below based on your operating system.
 2. **Open Command Prompt or PowerShell**.
 3. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-repo/your-project.git
+   git clone [https://github.com/your-repo/your-project.git](https://github.com/johnsonweih/fasms-docker.git)
    cd your-project
 4. **Log in to Docker Hub:**:
    ```bash
@@ -45,7 +45,7 @@ Follow the instructions below based on your operating system.
 2. **Open Terminal**.
 3. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-repo/your-project.git
+   git clone [https://github.com/your-repo/your-project.git](https://github.com/johnsonweih/fasms-docker.git)
    cd your-project
 4. **Log in to Docker Hub:**:
    ```bash
@@ -72,7 +72,7 @@ Follow the instructions below based on your operating system.
 3. **Open Terminal:**:
 4. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-repo/your-project.git
+   git clone [https://github.com/your-repo/your-project.git](https://github.com/johnsonweih/fasms-docker.git)
    cd your-project
 5. **Log in to Docker Hub:**:
    ```bash
