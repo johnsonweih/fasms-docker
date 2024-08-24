@@ -24,7 +24,7 @@ Follow the instructions below based on your operating system.
    ```bash
    git clone https://github.com/johnsonweih/fasms-docker.git
    cd your-project
-4. **Log in to Docker Hub**
+4. **Log in to Docker Hub (optional)**
    ```bash
    docker login
 5. **Pull Docker images from Docker Hub**
@@ -47,7 +47,7 @@ Follow the instructions below based on your operating system.
    ```bash
    git clone https://github.com/johnsonweih/fasms-docker.git
    cd your-project
-4. **Log in to Docker Hub**
+4. **Log in to Docker Hub (optional)**
    ```bash
    docker login
 5. **Pull Docker images from Docker Hub**
@@ -74,13 +74,13 @@ Follow the instructions below based on your operating system.
    ```bash
    git clone https://github.com/johnsonweih/fasms-docker.git
    cd your-project
-5. **Log in to Docker Hub:**
+5. **Log in to Docker Hub (optional)**
    ```bash
    docker login
-5. **Pull Docker images from Docker Hub:**
+5. **Pull Docker images from Docker Hub**
    ```bash
    docker-compose pull
-6. **Start the application:**
+6. **Start the application**
    ```bash
    docker-compose up   
 7. **Access the application**
