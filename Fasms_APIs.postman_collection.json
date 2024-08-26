@@ -1,0 +1,402 @@
+{
+	"info": {
+		"_postman_id": "7f35ba33-a28a-4c42-8f07-44b0753c0b73",
+		"name": "Fasms_APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31958571"
+	},
+	"item": [
+		{
+			"name": "Login and Authentication",
+			"item": [
+				{
+					"name": "/auth/login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"authToken\", jsonData.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "**Description:** Authenticate an administrator and retrieve an authorization token for accessing other APIs.\n\n**Input:**\n\n- **Body Parameters (raw JSON):**\n    \n    - `username`: The username of the administrator.\n        \n    - `password`: The password of the administrator."
+					},
+					"response": []
+				}
+			],
+			"description": "Administrator login is required to access other APIs. Ensure the environment is switched to `fasms_api_env` to automatically copy the token retrieved and pass it as the `Authorization` header in subsequent API requests."
+		},
+		{
+			"name": "Applicants",
+			"item": [
+				{
+					"name": "/api/applicants",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/applicants",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"applicants"
+							]
+						},
+						"description": "Retrieve a list of all applicants in the system.\n\n- **Input:**\n    \n    - **Headers:**\n        \n        - `Authorization`: Bearer token retrieved from login.\n            \n- **Output:**\n    \n    - A list of all applicants."
+					},
+					"response": []
+				},
+				{
+					"name": "/api/applicants/{id}",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/applicants/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"applicants",
+								"2"
+							]
+						},
+						"description": "Retrieve detailed information about a specific applicant by their ID\n\n- **Input:**\n    \n    - **Path Parameter:**\n        \n        - `id`: The ID of the applicant you want to retrieve.\n            \n    - **Headers:**\n        \n        - `Authorization`: Bearer token retrieved from login.\n            \n- **Example URL:**\n    \n    - `http://localhost:3000/api/applicants/2`\n        \n- **Output:**\n    \n    - The detailed information of the specified applicant."
+					},
+					"response": []
+				},
+				{
+					"name": "/api/applicants",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"applicant\": {\r\n    \"name\": \"Danny Hii\",\r\n    \"employment_status\": \"employed\",\r\n    \"sex\": \"male\",\r\n    \"date_of_birth\": \"1985-05-15\",\r\n    \"marital_status\": \"married\",\r\n    \"nric\": \"S1234567A\"\r\n  },\r\n  \"householdMembers\": [\r\n    {\r\n      \"name\": \"Ting Pang\",\r\n      \"employment_status\": \"employed\",\r\n      \"sex\": \"female\",\r\n      \"date_of_birth\": \"1987-07-10\",\r\n      \"relation\": \"spouse\"\r\n    },\r\n    {\r\n      \"name\": \"Russell Hii\",\r\n      \"employment_status\": \"unemployed\",\r\n      \"sex\": \"male\",\r\n      \"date_of_birth\": \"2010-09-12\",\r\n      \"relation\": \"daughter\",\r\n      \"school_level\": \"secondary\"\r\n    }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/applicants",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"applicants"
+							]
+						},
+						"description": "Create a new applicant and associated household members.\n\n**Input:**\n\n- **Headers:**\n    \n    - `Authorization`: Bearer token retrieved from login.\n        \n- **Body Parameters (raw JSON):**\n    \n    - `applicant`: Object containing applicant details:\n        \n        - `name`: Full name of the applicant.\n            \n        - `employment_status`: Employment status of the applicant (e.g., employed, unemployed).\n            \n        - `sex`: Gender of the applicant (e.g., male, female).\n            \n        - `date_of_birth`: Date of birth of the applicant in `YYYY-MM-DD` format.\n            \n        - `marital_status`: Marital status of the applicant (e.g., single, married).\n            \n        - `nric`: National Registration Identity Card (NRIC) number of the applicant.\n            \n    - `householdMembers`: Array of objects, each representing a household member:\n        \n        - `name`: Full name of the household member.\n            \n        - `employment_status`: Employment status of the household member.\n            \n        - `sex`: Gender of the household member.\n            \n        - `date_of_birth`: Date of birth of the household member in `YYYY-MM-DD` format.\n            \n        - `relation`: Relation to the applicant (e.g., spouse, son, daughter).\n            \n        - `school_level` (optional): The school level if the household member is a student (e.g., primary, secondary).\n            \n- **Output:**\n    \n    - Confirmation of the new applicant creation."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Schemes",
+			"item": [
+				{
+					"name": "/api/schemes",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/schemes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"schemes"
+							]
+						},
+						"description": "Retrieve a list of all available schemes.\n\n- **Input:**\n    \n    - **Headers:**\n        \n        - `Authorization`: Bearer token retrieved from login.\n            \n- **Output:**\n    \n    - A list of all schemes."
+					},
+					"response": []
+				},
+				{
+					"name": "/api/schemes/eligible",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/schemes/eligible?applicant=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"schemes",
+								"eligible"
+							],
+							"query": [
+								{
+									"key": "applicant",
+									"value": "2"
+								}
+							]
+						},
+						"description": "Get a list of schemes an applicant is eligible for based on their ID\n\n- **Input:**\n    \n    - **Query Parameters:**\n        \n        - `applicant`: ID of the applicant whose eligibility is being checked.\n            \n    - **Headers:**\n        \n        - `Authorization`: Bearer token retrieved from login.\n            \n- **Example URL:**\n    \n    - `http://localhost:3000/api/schemes/eligible?applicant=2`\n        \n- **Output:**\n    \n    - A list of eligible schemes for the specified applicant."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Applications",
+			"item": [
+				{
+					"name": "/api/applications",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/applications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"applications"
+							]
+						},
+						"description": "Retrieve a list of all applications.\n\n- **Input:**\n    \n    - **Headers:**\n        \n        - `Authorization`: Bearer token retrieved from login.\n            \n- **Output:**\n    \n    - A list of all applications."
+					},
+					"response": []
+				},
+				{
+					"name": "/api/applications",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"applicant_id\": 2,\r\n    \"scheme_id\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/applications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"applications"
+							]
+						},
+						"description": "Create a new application by linking an applicant to a scheme.\n\n**Input:**\n\n- **Headers:**\n    \n    - `Authorization`: Bearer token retrieved from login.\n        \n- **Body Parameters (raw JSON):**\n    \n    - `applicant_id`: ID of the applicant applying for the scheme.\n        \n    - `scheme_id`: ID of the scheme the applicant is applying for."
+					},
+					"response": []
+				},
+				{
+					"name": "/api/applications/update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"rejected\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/applications/update?application=4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"applications",
+								"update"
+							],
+							"query": [
+								{
+									"key": "application",
+									"value": "4"
+								}
+							]
+						},
+						"description": "Update the status of an application.\n\n- **Input:**\n    \n    - **Query Parameters:**\n        \n        - `application`: ID of the application to update.\n            \n    - **Headers:**\n        \n        - `Authorization`: Bearer token retrieved from login.\n            \n    - **Body Parameters (raw JSON):**\n        \n        - `status`: The new status of the application (e.g., approved, rejected).\n            \n- **Example URL:**\n    \n    - `http://localhost:3000/api/applications/update?application=3`\n        \n- **Example Input:**\n    \n\n{ \"status\": \"approved\"}\n\n- **Output:**\n    \n    - Confirmation of the application status update."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
